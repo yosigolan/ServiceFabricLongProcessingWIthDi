@@ -1,0 +1,1 @@
+C:\Users\yogolan\OneDrive - Microsoft\Dev Stuff\ExampleProjects\ServiceFabricLongProcessingWIthDI\ServiceFabricLongProcessingWIthDI\obj\x64\Debug\ServiceFabricLongProcessingWIthDI.sfproj.CoreCompileInputs.cache
