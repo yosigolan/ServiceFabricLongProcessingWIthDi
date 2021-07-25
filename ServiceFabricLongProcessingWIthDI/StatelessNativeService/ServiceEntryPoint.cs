@@ -31,14 +31,14 @@ namespace StatelessNativeService
                 iteration++;
                 if (stoppingToken.IsCancellationRequested)
                 {
-                    Trace.TraceInformation("SHut down requsted");
+                    Trace.TraceInformation("Shut down requested");
                     break;
                 }
                 // do your thing
                 _injectedService.DoSomthing();
 
                 // example of how to request to end the execution
-                if (iteration == 15)
+                if (iteration == 115)
                 {
                     Trace.TraceInformation("Requesting stop");
                     _executionCancelltionToken.RequestCancelltion();
@@ -46,7 +46,7 @@ namespace StatelessNativeService
                 await Task.Delay(1000);
             }
             await Finalize();
-            Trace.TraceInformation("Done SHuting down");
+            Trace.TraceInformation("Done shutting down");
         }
 
         private async Task Initialize()
@@ -60,12 +60,12 @@ namespace StatelessNativeService
             try
             {
                 // add all the dispose code here
-                Trace.TraceInformation("cant do awiat");
+                Trace.TraceInformation("Starting finalize");
                 await Task.Delay(1000);
             }
             catch (Exception e)
             {
-                Trace.TraceError("Fuck");
+                Trace.TraceError("Await failed");
             }
         }
     }

@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace StatelessNativeService
 {
@@ -40,7 +43,7 @@ namespace StatelessNativeService
         {
             // TODO: Replace the following sample code with your own logic 
             //       or remove this RunAsync override if it's not needed in your service.
-
+            Initialize();
 
             ExecutionCancelltionToken endExecutionToken = new ExecutionCancelltionToken();
             IHost host = BuildHost(endExecutionToken);
@@ -65,21 +68,42 @@ namespace StatelessNativeService
             }
             
             await backgroundTask;
+
+            Close();
+
+        }
+
+        private void Initialize()
+        {
+            Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .WriteTo.Debug() //write to the output window
+            //.WriteTo.Debug(new RenderedCompactJsonFormatter()) // write json to the output window
+            .CreateLogger();
+        }
+
+        private void Close()
+        {
+            Log.CloseAndFlush();
         }
 
 
         private IHost BuildHost(ExecutionCancelltionToken endExecutionToken)
         {
+            Log.Information("Starting host");
             IHostBuilder builder = Host.CreateDefaultBuilder()
             .ConfigureServices((hostContext, services) =>
             {
                 ConfigureServices(services);
                 services.AddSingleton(endExecutionToken);
-                // required to allow graceful shutdown
+                // IMPORTANT - required to allow graceful shutdown
                 services.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(15));
                 services.AddHostedService<ServiceEntryPoint>();
-            });
-          
+            })
+            .UseSerilog(); // <- Add Serilog logging;      
+
             IHost host = builder.Build();
             return host;
         }
